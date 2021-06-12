@@ -1,0 +1,195 @@
+#include <LiquidCrystal.h>
+const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+int a=0;
+int b=0;
+int c=0;
+float d=82;
+double voltage=0;
+double n=0;
+void setup() {
+ pinMode(A2,INPUT);
+ pinMode(A3,INPUT);
+ pinMode(A4,INPUT);
+ pinMode(A5,INPUT);
+ lcd.begin(20, 4);
+ pinMode(9,OUTPUT);
+TCCR1A = _BV(COM1A1);
+TCCR1B = _BV(WGM13) | _BV(CS10); 
+}
+double frecuencia = 1000;
+double duty = 0;
+void loop() {
+  a=0.06842619745*analogRead(A5);
+  b=0.97751710654*analogRead(A4);
+  if((a==0)&& b>800)
+  {
+      d=81.3; 
+  }
+  else if (0<a && a<6)
+  {
+    n=1.15;
+    d=82;
+  }
+  else if(5<a && a<11)
+  {
+    n=1;
+    d=82;
+  }
+  else if(a>10 && a<21)  
+  {
+    n=0.99;
+    d=82;
+  }
+  else if(a>20 && a<26)
+  {
+    n=0.98;
+    d=82;
+  }
+  else if(a>25 && a<31)
+  {
+    n=0.96;
+    d=82;
+  }
+  else if(a>30 && a<36)
+  {
+    n=0.945;
+    d=82;
+  }
+  else if(a>35 && a<41)
+  {
+    n=0.93;
+    d=82;
+  }
+  else if(a>40&& a<46)
+  {
+    n=0.92;
+    d=82;
+  }
+  else if(a>45 && a<51)
+  {
+    n=0.908;
+    d=82;
+  }
+  else if(a>50 && a<53) 
+  {
+    n=0.905;
+    d=82;
+  }
+  else if(a>52 && a<55) 
+  {
+    n=0.901;
+    d=82;
+  }
+  else if(a>54 && a<57) 
+  {
+    n=0.897;
+    d=82;
+  }
+  else if(a>56 && a<59) 
+  {
+    n=0.893;
+    d=82;
+  }
+  else if(a>58 && a<61) 
+  {
+    n=0.889;
+    d=82;
+  }
+  else if(a>60 && a<63) 
+  {
+    n=0.886;
+    d=82;
+  }
+  else if(a>62 && a<65) 
+  {
+    n=0.882;
+    d=82;
+  }
+  else if(a>64 && a<67) 
+  {
+    n=0.878;
+    d=82;
+  }
+   else if(a>66 && a<69)
+  {
+    n=0.874;
+    d=82;
+  }
+  else if(a>68 && a<71)
+  {
+    n=0.87;
+    d=82;
+  }
+ voltage=b/(d-n*a);
+  if(c==0)
+  {
+  duty=0;
+   lcd.setCursor(0,3);
+ lcd.print("Motor is OFF Now");
+  if(digitalRead(A2)==HIGH)
+  {
+    c=1;
+  }
+  }
+  else if(c==1)
+  {
+  if (voltage<4)
+  {
+    duty=0;
+  }
+  else if (voltage>=4 && voltage<=10)
+  {
+  duty=(voltage-4)/0.45;
+  }
+   else if (voltage>10 && voltage<=25)
+  {
+  duty=(voltage-4)/0.458;
+  }
+   else if (voltage>25 && voltage<=45.5)
+  {
+  duty=(voltage-4)/0.46;
+  }
+  else if (voltage>45.7)
+  {
+  duty=0;
+  }
+  
+ 
+  lcd.setCursor(0,3);
+ lcd.print("Motor is ON Now");
+  if(digitalRead(A3)==HIGH)
+  {
+    c=0;
+  }
+  }
+ PWM(frecuencia,duty);
+ lcd.setCursor(0,0);
+ lcd.print("% of Load=");
+ lcd.setCursor(11,0);
+ lcd.print(a);
+ lcd.setCursor(14,0);
+ lcd.print("%"); 
+  lcd.setCursor(0,1);
+ lcd.print("SPEED="); 
+ lcd.setCursor(7,1);
+ lcd.print(b); 
+ lcd.setCursor(12,1);
+ lcd.print("RPM");
+ lcd.setCursor(0,2);
+ lcd.print("Voltage = ");
+ lcd.setCursor(10,2);
+ lcd.print(voltage);
+ lcd.setCursor(15,2);
+ lcd.print("V");
+ delay(100);
+ lcd.clear();
+ }
+
+void PWM(float frecuencia, float duty){
+
+ICR1 = 16000000.0/(2.0*frecuencia);  
+OCR1A = ICR1*(duty/100.0); 
+
+
+}
